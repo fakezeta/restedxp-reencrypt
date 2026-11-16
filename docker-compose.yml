@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    image: restedxp-reencrypt:latest
+    restart: unless-stopped
+    init: true
+    # Not published to the host: only reachable through the caddy network
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data     # TLS certificates
+      - caddy_config:/config # Caddy config state
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  caddy_data:
+  caddy_config:
