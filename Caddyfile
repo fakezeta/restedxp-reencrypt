@@ -1,0 +1,20 @@
+# ---------------------------------------------------------------------------
+# Option A (default): plain HTTP on any host/domain — works out of the box,
+# good for testing. Once you have a domain pointed at this server, switch to
+# Option B below to get automatic HTTPS.
+# ---------------------------------------------------------------------------
+:80 {
+	reverse_proxy app:3000
+}
+
+# ---------------------------------------------------------------------------
+# Option B: automatic HTTPS via Let's Encrypt.
+# 1. Point an A/AAAA DNS record for your domain at this server
+#    (ports 80 + 443 reachable from the internet).
+# 2. Replace `rxp.example.com` below, comment out the `:80` block above,
+#    and uncomment this block. Caddy obtains/renews the certificate itself.
+# ---------------------------------------------------------------------------
+# rxp.example.com {
+# 	reverse_proxy app:3000
+# 	encode gzip
+# }

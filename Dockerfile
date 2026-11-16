@@ -14,7 +14,9 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 # NOTE: `next/font` downloads Google Fonts at build time; the builder
 # needs outbound HTTPS access to fonts.googleapis.com / fonts.gstatic.com.
-RUN npm run build
+RUN npm run build \
+ && test -d .next/standalone \
+ || { echo 'ERROR: .next/standalone not produced - add `output: "standalone"` to next.config.ts' >&2; exit 1; }
 
 # ---- runner: minimal production image running the standalone server ----
 FROM node:22-alpine AS runner
